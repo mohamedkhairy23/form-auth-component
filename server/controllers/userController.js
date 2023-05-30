@@ -13,7 +13,7 @@ const authUser = asyncHandler(async (req, res) => {
   if (user && (await user.matchPassword(password))) {
     // res send with call generateToken refers to res.cookie [send data with cookies]
     generateToken(res, user._id);
-    res.status(201).json({
+    res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
@@ -57,7 +57,7 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("Invalid user data");
   }
 
-  res.status(200).json({ message: "Register User" });
+  // res.status(200).json({ message: "Register User" });
 });
 
 // @desc     Logout user
@@ -75,14 +75,45 @@ const logoutUser = asyncHandler(async (req, res) => {
 // route     GET /api/users/profile
 // @access   Private
 const getUserProfile = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "User Profile" });
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    });
+  } else {
+    res.status(404);
+    throw new Error("User Not Found");
+  }
 });
 
 // @desc     Update user profile
 // route     PUT /api/users/profile
 // @access   Private
 const updateUserProfile = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "Update User Profile" });
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+    });
+  } else {
+    res.status(404);
+    throw new Error("User Not Found");
+  }
 });
 
 export {
