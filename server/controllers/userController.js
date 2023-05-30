@@ -56,8 +56,6 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(401);
     throw new Error("Invalid user data");
   }
-
-  // res.status(200).json({ message: "Register User" });
 });
 
 // @desc     Logout user
