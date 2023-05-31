@@ -1,6 +1,6 @@
 Features:
 
-- installing react by vite to make react app faster
+- Vite/React
 - Authentication and authorization using MERN
 - Update profile
 - Redux tool kit
