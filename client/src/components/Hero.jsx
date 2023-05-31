@@ -1,6 +1,26 @@
 import { Container, Card, Button } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { LinkContainer } from "react-router-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { useLogoutMutation } from "../slices/usersApiSlice";
+import { logout } from "../slices/authSlice";
 const Hero = () => {
+  const { userInfo } = useSelector((state) => state.auth);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [logoutApiCall] = useLogoutMutation();
+
+  const logoutHandler = async () => {
+    try {
+      await logoutApiCall().unwrap();
+      dispatch(logout());
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className=" py-5">
       <Container className="d-flex justify-content-center">
@@ -12,14 +32,31 @@ const Hero = () => {
             Bootstrap library
           </p>
           <div className="d-flex">
-            <LinkContainer to="/login">
-              <Button variant="primary" className="me-3">
-                Sign In
-              </Button>
-            </LinkContainer>
-            <LinkContainer to="/register">
-              <Button variant="secondary">Sign Up</Button>
-            </LinkContainer>
+            {userInfo ? (
+              <>
+                <Button
+                  onClick={logoutHandler}
+                  variant="primary"
+                  className="me-3"
+                >
+                  Logout
+                </Button>
+                <LinkContainer to="/profile">
+                  <Button variant="secondary">Profile</Button>
+                </LinkContainer>
+              </>
+            ) : (
+              <>
+                <LinkContainer to="/login">
+                  <Button variant="primary" className="me-3">
+                    Sign In
+                  </Button>
+                </LinkContainer>
+                <LinkContainer to="/register">
+                  <Button variant="secondary">Sign Up</Button>
+                </LinkContainer>
+              </>
+            )}
           </div>
         </Card>
       </Container>
